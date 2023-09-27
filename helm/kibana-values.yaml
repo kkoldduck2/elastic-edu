@@ -123,7 +123,9 @@ service:
   type: ClusterIP
   loadBalancerIP: ""
   port: 5601
-  nodePort: ""
+  type: NodePort
+  nodePort: 32275
+
   labels: {}
   annotations: {}
   # cloud.google.com/load-balancer-type: "Internal"
