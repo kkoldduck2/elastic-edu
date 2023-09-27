@@ -77,46 +77,45 @@ wget https://github.com/elastic/helm-charts/tree/main/kibana/values.yaml
 # elasticsearch value 파일로 배포하기
 $ cd elastic-edu/helm/
 $ helm install elasticsearch -f ./elasticsearch-values.yaml elastic/elasticsearch -n es --create-namespace &
-helm install elasticsearch elastic/elasticsearch -f ./elasticsearch-values.yaml -n es --create-namespace &
+$ helm install elasticsearch elastic/elasticsearch -f ./elasticsearch-values.yaml -n es --create-namespace &
 
 # log 확인
-k logs -f elasticsearch-master-0 -n es
+$ k logs -f elasticsearch-master-0 -n es
 
 # port forward
-kubectl port-forward -n es elasticsearch-master-0 9200:9200 &
+$ kubectl port-forward -n es elasticsearch-master-0 9200:9200 &
 
 # curl로 접속 확인
-curl https://localhost:9200 -k -u 'elastic:new1234!'
+$ curl https://localhost:9200 -k -u 'elastic:new1234!'
 
 # workernode1에서 실행
 # kibana value 파일로 배포하기
 # old helm install kibana ./helm-charts/kibana -n es
-helm install kibana -f ./kibana-values.yaml elastic/kibana -n es --create-namespace &
-helm install kibana elastic/kibana -f ./kibana-values.yaml -n es &
+$ helm install kibana -f ./kibana-values.yaml elastic/kibana -n es --create-namespace &
+$ helm install kibana elastic/kibana -f ./kibana-values.yaml -n es &
 
-k logs -f svc/kibana-kibana -n es
-k describe pod/kibana-kibana-99c648b97-pcb5m -n es
+$ k logs -f svc/kibana-kibana -n es
+$ k describe pod/kibana-kibana-99c648b97-pcb5m -n es
 
 # port forward
-kubectl port-forward --namespace es svc/kibana-kibana 5601:5601 &
-curl https://localhost:5601
-
+$ kubectl port-forward --namespace es svc/kibana-kibana 5601:5601 &
+$ curl https://localhost:5601
 
 ```
 
 
 ```bash
 # PVC, Secret 수동 삭제
-kubectl get pvc
-kubectl patch pvc elasticsearch-master-elasticsearch-master-0  -p '{"metadata":{"finalizers":null}}' -n es
-kubectl patch pvc elasticsearch-master-elasticsearch-master-1  -p '{"metadata":{"finalizers":null}}' -n es
-kubectl patch pvc elasticsearch-master-elasticsearch-master-2  -p '{"metadata":{"finalizers":null}}' -n es
-kubectl delete pvc elasticsearch-master-elasticsearch-master-0 -n es
-kubectl delete pvc elasticsearch-master-elasticsearch-master-1 -n es
-kubectl delete pvc elasticsearch-master-elasticsearch-master-2 -n es
-kubectl get secret
-kubectl delete secret elasticsearch-master-certs -n es
-kubectl delete secret elasticsearch-master-credentials -n es
+$ kubectl get pvc
+$ kubectl patch pvc elasticsearch-master-elasticsearch-master-0  -p '{"metadata":{"finalizers":null}}' -n es
+$ kubectl patch pvc elasticsearch-master-elasticsearch-master-1  -p '{"metadata":{"finalizers":null}}' -n es
+$ kubectl patch pvc elasticsearch-master-elasticsearch-master-2  -p '{"metadata":{"finalizers":null}}' -n es
+$ kubectl delete pvc elasticsearch-master-elasticsearch-master-0 -n es
+$ kubectl delete pvc elasticsearch-master-elasticsearch-master-1 -n es
+$ kubectl delete pvc elasticsearch-master-elasticsearch-master-2 -n es
+$ kubectl get secret
+$ kubectl delete secret elasticsearch-master-certs -n es
+$ kubectl delete secret elasticsearch-master-credentials -n es
 
 ```
 
