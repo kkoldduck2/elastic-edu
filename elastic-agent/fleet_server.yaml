@@ -36,8 +36,8 @@ spec:
         ports:
         - containerPort: 8220                                                               ## Fleet Server용 port 설정
           protocol: TCP
-        - containerPort: 8200                                                               ## APM Server용 port 사전 설정
-          protocol: TCP    
+        # - containerPort: 8200                                                               ## APM Server용 port 사전 설정
+        #   protocol: TCP    
       # nodeSelector:                                                                         ## node selector 설정                                                                
       #   es: 'true'
       #   sa: 'true'
@@ -60,21 +60,21 @@ spec:
     port: 8220
     protocol: TCP
     targetPort: 8220
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: apm-server                                                                          ## APM Server용 service 사전 설정
-  namespace: es                                                                 ## 일반적으로 8200 port 사용
-  labels:
-    k8s-app: elastic-agent
-    app: integration-server
-spec:
-  type: ClusterIP
-  selector:
-    app: integration-server
-  ports:
-  - name: http
-    port: 8200
-    protocol: TCP
-    targetPort: 8200
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: apm-server                                                                          ## APM Server용 service 사전 설정
+#   namespace: es                                                                 ## 일반적으로 8200 port 사용
+#   labels:
+#     k8s-app: elastic-agent
+#     app: integration-server
+# spec:
+#   type: ClusterIP
+#   selector:
+#     app: integration-server
+#   ports:
+#   - name: http
+#     port: 8200
+#     protocol: TCP
+#     targetPort: 8200
