@@ -18,16 +18,16 @@ spec:
     spec:
       containers:
       - name: integration-server
-        image: nexus.dspace.kt.co.kr/icis/elastic-agent:8.9.2
+        image: docker.elastic.co/beats/elastic-agent:8.9.2
         env:                                                                               
         - name: FLEET_SERVER_ENABLE                                                         ## Fleet Server 역할 부여(1 = True)
           value: "1"
         - name: FLEET_SERVER_ELASTICSEARCH_HOST                                             ## Elasticseach service host와 port 설정
-          value: https://elasticsearch-master:9200
+          value: https://localhost:9200
         - name: FLEET_SERVER_POLICY_NAME                                                    ## Kibana에서 생성한 Fleet Server agent policy 이름            -> 위에 나온 name 값 입력
           value: fleet-server-policy
         - name: FLEET_SERVER_SERVICE_TOKEN                                                  ## Kibana에서 생성한 Fleet Server agent policy의 service token -> 위에 나온 token 값 입력
-          value: AAEAAWVsYXN0aWMvZmxlZXQtc2VydmVyL3Rva2VuLTE2ODAxNjgyMDQyNjM6ZmgwNnVBb1BUNDY1M0tjMnk4VXIyZw
+          value: 
         - name: FLEET_SERVER_ELASTICSEARCH_INSECURE                                         ## 인증서 검증 절차를 스킵
           value: "1"
         - name: FLEET_SERVER_PORT                                                           ## Fleet Server port 설정, 일반적으로 8220 사용
@@ -36,22 +36,11 @@ spec:
         - containerPort: 8220                                                               ## Fleet Server용 port 설정
           protocol: TCP
         - containerPort: 8200                                                               ## APM Server용 port 사전 설정
-          protocol: TCP
-        volumeMounts:                                                                       ## 기타 volumemount
-        - name: kafka-crt                                                                      
-          readOnly: true                                                               
-          mountPath: /var/tmp                                                              
+          protocol: TCP    
       nodeSelector:                                                                         ## node selector 설정                                                                
         elastic-system: 'true'
         sa: 'true'
       serviceAccount: elastic-agent                                                         ## service account는 role, role-binding에서 설정한 serviceaccount 사용
-      volumes:                                                                              ## 추가로 mount 필요한 파일 설정
-        - name: kafka-crt                                                                   ## ex. Kafka 연동을 위해 필요하 인증파일
-          secret:
-            secretName: kafka-crt
-            defaultMode: 420
-      imagePullSecrets:                                                                     ## imeagepullsecret 설정
-        - "name": "dspace-nexus"
 ---
 apiVersion: v1
 kind: Service
