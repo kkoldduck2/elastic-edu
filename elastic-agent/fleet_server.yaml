@@ -24,7 +24,7 @@ spec:
         - name: FLEET_SERVER_ENABLE                                                         ## Fleet Server 역할 부여(1 = True)
           value: "1"
         - name: FLEET_SERVER_ELASTICSEARCH_HOST                                             ## Elasticseach service host와 port 설정
-          value: https://10.103.56.106:9200
+          value: https://10.103.56.106:9200                                                 ## Kubernetes -> elasticsearch service ip 주소로 변경
         - name: FLEET_SERVER_POLICY_NAME                                                    ## Kibana에서 생성한 Fleet Server agent policy 이름            -> 위에 나온 name 값 입력
           value: fleet-server-policy
         - name: FLEET_SERVER_SERVICE_TOKEN                                                  ## Kibana에서 생성한 Fleet Server agent policy의 service token -> 위에 나온 token 값 입력
