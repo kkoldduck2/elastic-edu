@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: integration-server-deployment
+  namespace: es
   labels:
     app: integration-server
 spec:
@@ -23,11 +24,11 @@ spec:
         - name: FLEET_SERVER_ENABLE                                                         ## Fleet Server 역할 부여(1 = True)
           value: "1"
         - name: FLEET_SERVER_ELASTICSEARCH_HOST                                             ## Elasticseach service host와 port 설정
-          value: https://localhost:9200
+          value: https://10.103.56.106:9200
         - name: FLEET_SERVER_POLICY_NAME                                                    ## Kibana에서 생성한 Fleet Server agent policy 이름            -> 위에 나온 name 값 입력
           value: fleet-server-policy
         - name: FLEET_SERVER_SERVICE_TOKEN                                                  ## Kibana에서 생성한 Fleet Server agent policy의 service token -> 위에 나온 token 값 입력
-          value: 
+          value: AAEAAWVsYXN0aWMvZmxlZXQtc2VydmVyL3Rva2VuLTE2OTY0MDc5MDcxNzQ6RzBVYWVJU2FTVmlHU2hNLUc1dTVLdw
         - name: FLEET_SERVER_ELASTICSEARCH_INSECURE                                         ## 인증서 검증 절차를 스킵
           value: "1"
         - name: FLEET_SERVER_PORT                                                           ## Fleet Server port 설정, 일반적으로 8220 사용
@@ -37,16 +38,16 @@ spec:
           protocol: TCP
         - containerPort: 8200                                                               ## APM Server용 port 사전 설정
           protocol: TCP    
-      nodeSelector:                                                                         ## node selector 설정                                                                
-        elastic-system: 'true'
-        sa: 'true'
+      # nodeSelector:                                                                         ## node selector 설정                                                                
+      #   es: 'true'
+      #   sa: 'true'
       serviceAccount: elastic-agent                                                         ## service account는 role, role-binding에서 설정한 serviceaccount 사용
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: fleet-server                                                                        ## Fleet Server용 service
-  namespace: elastic-system                                                                 ## 일반적으로 8220 port 사용
+  namespace: es                                                                 ## 일반적으로 8220 port 사용
   labels:
     k8s-app: elastic-agent
     app: integration-server
@@ -64,7 +65,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: apm-server                                                                          ## APM Server용 service 사전 설정
-  namespace: elastic-system                                                                 ## 일반적으로 8200 port 사용
+  namespace: es                                                                 ## 일반적으로 8200 port 사용
   labels:
     k8s-app: elastic-agent
     app: integration-server
