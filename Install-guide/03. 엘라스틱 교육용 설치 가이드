@@ -1,0 +1,144 @@
+# 1. VM 생성하기
+
+- vm 3대
+    - master 1개, worker 2개
+    - ubuntu OS
+- master node에 방화벽 규칙 설정 (kibana 접속을 위함)
+- vm 접속
+
+# 2. K3S set up
+
+### 1) master node
+
+```bash
+# root 권한으로 수행
+$ su
+
+# master01에서
+$ curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644 --cluster-init
+
+# 확인
+$ kubectl version
+Client Version: version.Info{Major:"1", Minor:"26", GitVersion:"v1.26.4+k3s1", GitCommit:"8d0255af07e95b841952563253d27b0d10bd72f0", GitTreeState:"clean", BuildDate:"2023-04-20T00:33:18Z", GoVersion:"go1.19.8", Compiler:"gc", Platform:"linux/amd64"}
+Kustomize Version: v4.5.7
+Server Version: version.Info{Major:"1", Minor:"26", GitVersion:"v1.26.4+k3s1", GitCommit:"8d0255af07e95b841952563253d27b0d10bd72f0", GitTreeState:"clean", BuildDate:"2023-04-20T00:33:18Z", GoVersion:"go1.19.8", Compiler:"gc", Platform:"linux/amd64"}
+---
+WARNING: This version information is deprecated and will be replaced with the output from kubectl version --short.  Use --output=yaml|json to get the full version.
+Client Version: version.Info{Major:"1", Minor:"26", GitVersion:"v1.26.4+k3s1", GitCommit:"8d0255af07e95b841952563253d27b0d10bd72f0", GitTreeState:"clean", BuildDate:"2023-04-20T00:33:18Z", GoVersion:"go1.19.8", Compiler:"gc", Platform:"linux/amd64"}
+Kustomize Version: v4.5.7
+Server Version: version.Info{Major:"1", Minor:"26", GitVersion:"v1.26.4+k3s1", GitCommit:"8d0255af07e95b841952563253d27b0d10bd72f0", GitTreeState:"clean", BuildDate:"2023-04-20T00:33:18Z", GoVersion:"go1.19.8", Compiler:"gc", Platform:"linux/amd64"}
+
+# IP/ token 확인
+$ cat /var/lib/rancher/k3s/server/node-token
+K1053500b81d3608e011e82c285ad06590811db8059cca5ca0b3cbd10e969f95e03::server:9bd15fea5819e2ce185669abd5a1ce48
+---
+K10b0a3c6320b9ceff2b14ea265774c388e7aa4ad8cfa35804efb98eb9235f99290::server:5e7fd6a284e028bdcba918abd9fae74e
+```
+
+### 2) worker node
+
+```bash
+# root 권한으로 수행
+# worker node 에서 각각 수행
+
+$ export MASTER_TOKEN="K10b0a3c6320b9ceff2b14ea265774c388e7aa4ad8cfa35804efb98eb9235f99290::server:5e7fd6a284e028bdcba918abd9fae74e"
+  export MASTER_IP="10.128.0.35"
+  
+
+$ curl -sfL https://get.k3s.io | K3S_URL=https://${MASTER_IP}:6443 K3S_TOKEN=${MASTER_TOKEN} sh -
+
+…
+[INFO]  systemd: Starting k3s-agent   ← 나오면 정상
+
+# master01 에서
+$ kubectl get nodes
+NAME                STATUS   ROLES                       AGE     VERSION
+ktds-k3s-master01   Ready    control-plane,etcd,master   5m19s   v1.26.4+k3s1
+ktds-k3s-master02   Ready    control-plane,etcd,master   3m18s   v1.26.4+k3s1
+ktds-k3s-master03   Ready    control-plane,etcd,master   3m35s   v1.26.4+k3s1
+ktds-k3s-worker01   Ready    <none>                      28s     v1.26.4+k3s1
+ktds-k3s-worker02   Ready    <none>                      63s     v1.26.4+k3s1
+ktds-k3s-worker03   Ready    <none>                      53s     v1.26.4+k3s1
+```
+
+# 3. Helm 설치
+
+```bash
+# 개인 PC WSL
+# root 권한으로 수행
+$ su
+
+## 임시 디렉토리를 하나 만들자.
+$ mkdir -p ~/temp/helm/
+  cd ~/temp/helm/
+
+# 다운로드
+$ wget https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz
+
+# 압축풀기
+$ tar -zxvf helm-v3.12.0-linux-amd64.tar.gz
+
+# 확인
+$ ll linux-amd64/helm
+-rwxr-xr-x 1 goworkj 123 50597888 May 10 16:35 linux-amd64/helm*
+
+# move
+$ mv linux-amd64/helm /usr/local/bin/helm
+
+# 확인
+$ ll /usr/local/bin/helm*
+-rwxr-xr-x 1 goworkj 123 50597888 May 10 16:35 /usr/local/bin/helm*
+
+# 일반유저로 복귀
+$ exit
+
+# 확인
+$ helm version
+version.BuildInfo{Version:"v3.12.0", GitCommit:"c9f554d75773799f72ceef38c51210f1842a1dea", GitTreeState:"clean", GoVersion:"go1.20.3"}
+
+# 혹시 아래 메시지가 뜨면 권한조정한다.
+# WARNING: Kubernetes configuration file is group-readable. This is insecure.
+$ chmod 600 ~/.kube/config-multi
+```
+
+# 4. Elasticsearch 설치
+
+- elasticsearch-values.yaml, kibana-values.yaml 파일은 아래 링크를 참조한다.
+    
+    [설치 yaml 파일](https://www.notion.so/yaml-6ef1043d7bde4ff8b1a2458644da977d?pvs=21)
+    
+
+```bash
+# elastic 공식 helm repo 추가
+$ helm repo add elastic https://helm.elastic.co
+
+# minimal하게 수정한 elasticsearch value 파일로 배포하기
+$ cd elastic-edu/helm/
+$ helm install elasticsearch -f ./elasticsearch-values.yaml elastic/elasticsearch -n es --create-namespace &
+
+# log 확인
+$ k logs -f elasticsearch-master-0 -n es
+
+# port forward
+$ kubectl port-forward -n es elasticsearch-master-0 9200:9200 &
+
+# curl로 접속 확인
+$ curl https://localhost:9200 -k -u 'elastic:new1234!'
+```
+
+# 5. Kibana 설치
+
+```bash
+# kibana value 파일로 배포하기
+$ helm install kibana elastic/kibana -f ./kibana-values.yaml -n es &
+
+# log 확인
+$ k logs -f svc/kibana-kibana -n es
+$ k describe pod/kibana-kibana-99c648b97-pcb5m -n es
+```
+
+# 6. 브라우저에서 kibana 접속
+
+master node의 external ip로 접속한다.
+
+[http://$](http://%24/){master node 외부 IP}:32275
