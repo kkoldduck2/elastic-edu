@@ -1,8 +1,4 @@
-# WSL2에서 Elastic 설치하기
-
-
-
-기본적으로 WSL2, Docker Desktop, Ubuntu가 설치된 환경에서 설치를 진행한다.
+# GCP에서 Single Node로 Elastic 설치하기
 
 
 
@@ -17,15 +13,65 @@ git clone https://github.com/hiviv/elastic-edu.git
 
 
 
-## 2) K3S Single Mode 구성
+## 2) GPC VM 생성하기
+
+* elasticsearch, kibana 각각 2GB 정도 메모리가 필요하므로 16GB 메모리로 선택하여 VM을 생성한다.
+* Compute Engine > VM 인스턴스 
+
+* 머신유형 : e2-standard-4(vCPU 4개, 16GB 메모리)
+
+* 부팅디스크
+
+  * OS : Ubuntu 22.04 LTS
+    * x86/64, amd64 jammy image built on 2023-09-19
+  * disk : 100GB
+* 방화벽 : HTTP 트래픽 허용, HTTPS 트래픽 허용 체크
+
+
+
+## 3) 방화벽 규칙 만들기
+
+반드시 expose 한 port 로 방화벽을 열어줘야 한다.
+
+* 메뉴 : VPC네트워크 > 방화벽 > VPC 방화벽 규칙
+
+* 방화벽 규칙 만들기
+
+  * 규칙명 : allow-es
+
+  * 로그 : 사용안함
+
+  * 우선순위 : 1000
+
+  * 트래픽방향 : 수신
+
+  * 일치시작업 : 허용
+
+  * 대상 : 네트워크의 모든 인스턴스
+
+  * 소스필터 : IPv4범위
+
+  * 소스 IPv4범위
+
+    * 0.0.0.0/0     <-- 모두 열자.
+
+  * 대상필터 : IPv4범위
+
+  * 대상 IPv4범위 : 0.0.0.0/0    <-- 모든 소스 를 다 허용
+
+  * port
+
+    * tcp : 32275 <-- Node expose port 명시
+
+      
+
+## 4) K3S Single Mode 구성
 
 
 
 ```bash
+# 비밀번호 설정
 $ sudo passwd
-New password:
-Retype new password:
-passwd: password updated successfully
 
 # root 권한으로 수행
 $ su
@@ -43,14 +89,13 @@ Server Version: version.Info{Major:"1", Minor:"27", GitVersion:"v1.27.6+k3s1", G
 
 # 확인
 $ kubectl get nodes -o wide
-NAME   STATUS   ROLES                  AGE     VERSION        INTERNAL-IP      EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION                      CONTAINER-RUNTIME
-ion    Ready    control-plane,master   3h21m   v1.27.6+k3s1   172.28.245.240   <none>        Ubuntu 22.04.2 LTS   5.15.90.1-microsoft-standard-WSL2   containerd://1.7.6-k3s1.27
-
+NAME             STATUS   ROLES                  AGE    VERSION        INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+elastic-single   Ready    control-plane,master   115s   v1.27.6+k3s1   10.178.0.2    <none>        Ubuntu 22.04.3 LTS   6.2.0-1014-gcp   containerd://1.7.6-k3s1.27
 ```
 
 
 
-## 3) kubeconfig 설정
+## 5) kubeconfig 설정
 
 ### 
 
@@ -101,7 +146,7 @@ root 권한자가 아닌 다른 사용자도 사용하려면 위와 동일하게
 
 
 
-## 4) helm install
+## 6) helm install
 
 #### helm client download
 
@@ -148,7 +193,7 @@ $ chmod 600 ~/.kube/config-multi
 
 
 
-## 5) alias 정의
+## 7) alias 정의
 
 ```sh
 # user 권한으로 alias 등록
@@ -167,7 +212,7 @@ source ~/.bashrc
 
 
 
-## 6) K9S Setup
+## 8) K9S Setup
 
 kubernetes Cluster를 관리하기 위한 kubernetes cli tool 을 설치해 보자.
 
@@ -203,9 +248,65 @@ $ k9s
 
 ```
 
+#### k9s 명령어
+
+네임스페이스 변경
+
+```ruby
+:namespace <namespcae_name>
+```
+
+다양한 오브젝트 모니터링
+
+```ruby
+:logs               # 모든 컨테이너 로그 보기
+:services           # Service 모니터링
+:deployments        # Deployment 모니터링
+:statefulsets       # StatefulSet 모니터링
+:daemonsets         # DaemonSet 모니터링
+:configmaps         # ConfigMap 모니터링
+:secrets            # Secret 모니터링
+:pods               # Pod 모니터링
+:no                # 노드 모니터링
+```
+
+터미널에서 컨테이너 쉘 접속
+
+```ruby
+shift + s    # 선택한 Pod에 대한 쉘 접속
+:q : K9s 종료
+:version : K9s 버전 정보 출력
+:cluster-info : 클러스터 정보 출력
+:nodes : 노드 정보 출력
+:ns : 현재 네임스페이스 출력
+:namespace <namespace> : 네임스페이스 변경
+/ : 검색 모드로 변경
+? : 정규식 검색 모드로 변경
+ctrl+l : 화면 지우기
+ctrl+c : 선택 취소
+enter : 선택한 오브젝트 정보 출력
+ctrl+enter : 선택한 오브젝트 YAML 출력
+shift+enter : 선택한 오브젝트 로그 출력
+shift+a : 새로운 오브젝트 생성
+shift+e : 선택한 오브젝트 수정
+shift+d : 선택한 오브젝트 삭제
+shift+s : 선택한 Pod에 대한 쉘 접속
+: : 명령 모드로 변경
+:logs : 모든 컨테이너 로그 출력
+:services : Service 정보 출력
+:deployments : Deployment 정보 출력
+:statefulsets : StatefulSet 정보 출력
+:daemonsets : DaemonSet 정보 출력
+:configmaps : ConfigMap 정보 출력
+:secrets : Secret 정보 출력
+:pods : Pod 정보 출력
+:no : 노드 정보 출력
+:portforwards <pod> : Pod 포트 포워딩
+```
 
 
-## 7) Elasticsearch 설치하기
+
+## 9) Elasticsearch 설치하기
 
 helm chart를 이용하면 손 쉽게 설치할 수 있다. (Elastic 공식 Helm Chart : https://github.com/elastic/helm-charts)
 
@@ -234,7 +335,7 @@ $ curl https://localhost:9200 -k -u 'elastic:new1234!'
 
 
 
-## 8) Kibana 설치하기
+## 10) Kibana 설치하기
 
 elasticsearch에 이어 kibana도 수정한 values.yaml을 이용하여 설치한다. namespace는 동일하게 es로 설정하였다.
 
@@ -251,8 +352,12 @@ $ kubectl port-forward -n es svc/kibana-kibana 5601:5601 &
 
 $ curl -v http://localhost:5601
 
-# 브라우저에서 kibana 접속 elastic/new1234!
-https://localhost:5601
-
 ```
 
+
+
+## 11) 브라우저에서 Kibana 접속하기
+
+GCP의 external ip로 접속한다.
+
+http://${GCP 외부 IP}:32275
