@@ -4,7 +4,7 @@
 
 기본적으로 WSL2, Docker Desktop, Ubuntu가 설치된 환경에서 설치를 진행한다.
 
-설치가 되어있지 않다면 <u>[PC Setting](./00.pc-setting.md)</u> 을 우선 수행한다.
+설치가 되어있지 않다면 <u>[PC Setting](./01-PC-setting.md)</u> 을 우선 수행한다.
 
 
 
