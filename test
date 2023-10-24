@@ -1,0 +1,2 @@
+{"log.level":"info","@timestamp":"2023-10-24T09:17:44.839Z","log.logger":"api","log.origin":{"file.name":"api/server.go","file.line":79},"message":"Stats endpoint (127.0.0.1:6791) finished: accept tcp 127.0.0.1:6791: use of closed network connection","log":{"source":"elastic-agent"},"ecs.version":"1.6.0"}                                                                
+Error: context canceled  
