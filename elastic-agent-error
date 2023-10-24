@@ -1,0 +1,5 @@
+{"log.level":"info","@timestamp":"2023-10-24T09:17:44.839Z","log.logger":"api","log.origin":{"file.name":"api/server.go","file.line":79},"message":"Stats endpoint (127.0.0.1:6791) finished: accept tcp 127.0.0.1:6791: use of closed network connection","log":{"source":"elastic-agent"},"ecs.version":"1.6.0"}                                                                
+Error: context canceled  
+
+------- 수진씨 에러
+{"log.level":"warn","@timestamp":"2023-10-24T09:11:19.180Z","log.origin":{"file.name":"fleet/fleet_gateway.go","file.line":194},"message":"Possible transient error during checkin with fleet-server, retrying","log":{"source":"elastic-agent"},"error":{"message":"fail to checkin to fleet-server: all hosts failed: 1 error occurred:\n\t* requester 0/1 to host https://10.109.210.170:8220/ errored: Post "https://10.109.210.170:8220/api/fleet/agents/ea9abeb2-e162-4839-8d25-fee4456ce2b1/checkin?\": dial tcp 10.109.210.170:8220: connect: connection refused\n\n"},"request_duration_ns":75002574534,"failed_checkins":1,"retry_after_ns":77367008597,"ecs.version":"1.6.0"}
