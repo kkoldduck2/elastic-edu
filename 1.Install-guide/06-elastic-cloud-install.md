@@ -12,19 +12,19 @@ https://www.elastic.co/kr/cloud/elasticsearch-service/signup
 
   
 
-<img src="assets\20231023_215213.png" align="left">
+<img src="assets\20231023_215213.png">
 
 
 
 * Google을 클릭하여 간편 가입을 한다.
 
-<img src="assets\20231023_215355.png" align="left">
+<img src="assets\20231023_215355.png">
 
 
 
 * 가입을 위한 기본 정보를 입력한다.
 
-<img src="assets\20231023_220313.png" align="left">
+<img src="assets\20231023_220313.png">
 
 
 
@@ -34,7 +34,7 @@ https://www.elastic.co/kr/cloud/elasticsearch-service/signup
 * Name
   * edu (각자 사용하고 싶은 이름으로 입력한다.)
 
-<img src="assets\20231023_220911.png" align="left">
+<img src="assets\20231023_220911.png">
 
 
 
@@ -42,12 +42,12 @@ https://www.elastic.co/kr/cloud/elasticsearch-service/signup
   * ID : elastic
   * PW : 메모장에 별도 복사
 
-<img src="assets\20231023_221507.png" align="left">
+<img src="assets\20231023_221507.png">
 
 * 설치가 완료되면 "Continue" 버튼을 클릭한다.
 
-<img src="assets\20231023_221736.png" align="left">
+<img src="assets\20231023_221736.png">
 
 
 
-<img src="assets\20231023_221922.png" align="left">
+<img src="assets\20231023_221922.png">

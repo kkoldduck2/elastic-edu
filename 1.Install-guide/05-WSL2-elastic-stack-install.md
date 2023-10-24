@@ -6,7 +6,7 @@
 
 본 교육에서는 Elasticsearch, kibana, fleet server, elastic agent 를 설치하여 데이터 수집 및 시각화를 구성한다.
 
-<img src="D:\GitHub\hiviv\elastic-edu\1.Install-guide\assets\fleet-server-cloud-deployment.png" align="left">
+<img src="assets\fleet-server-cloud-deployment.png">
 
 | name                                   | desc                                                         |
 | :------------------------------------- | :----------------------------------------------------------- |
@@ -144,32 +144,32 @@ $ kubectl create -f elastic-agent-role-clusterrole-serviceaccount.yaml
 * 브라우저에서 kibana에 접속한다.
   * http://localhost:5601 (elastic/new1234!)
 
-<img src="assets\20231022_223021.png" align="left">
+<img src="assets\20231022_223021.png">
 
 
 
 * "Explore on my own"을 선택한다.
 
-<img src="assets\20231022_223312.png" align="left">
+<img src="assets\20231022_223312.png">
 
 * 왼쪽 상단 ☰ > Management > Fleet를 선택한다.
 
 
 
-<img src="assets\20231022_230337.png" align="left">
+<img src="assets\20231022_230337.png">
 
 
 
 * "Add Fleet Server"를 클릭한다.
 
-<img src="assets\20231022_230927.png" align="left">
+<img src="assets\20231022_230927.png">
 
 * Advanced 선택
 * ① Name
   * fleet-server-policy
 * Create policy 선택
 
-<img src="assets\20231022_231511.png" align="left">
+<img src="assets\20231022_231511.png">
 
 
 
@@ -180,17 +180,17 @@ $ kubectl create -f elastic-agent-role-clusterrole-serviceaccount.yaml
   *  https://localhost:8220
   * "Add host" 선택
 
-<img src="assets\20231022_231716.png" align="left">
+<img src="assets\20231022_231716.png">
 
 
 
 * ④ Generate service token 클릭 후 생성된 token 복사
 
-<img src="assets\20231022_232423.png" align="left">
+<img src="assets\20231022_232423.png">
 
 * fleet-server.yaml 파일에 복사한 token 값 수정
 
-<img src="assets\20231022_235215.png" align="left">
+<img src="assets\20231022_235215.png">
 
 ```bash
 # token 값 수정 후 저장
@@ -202,7 +202,7 @@ $ kubectl create -f fleet-server.yaml
 
 * 잠시 기다리면 자동으로 Fleet Server와 Connect 된다.
 
-<img src="assets\20231023_145002.png" align="left">
+<img src="assets\20231023_145002.png">
 
 
 
@@ -210,13 +210,13 @@ $ kubectl create -f fleet-server.yaml
 
 
 
-<img src="assets\20231023_153751.png" align="left">
+<img src="assets\20231023_153751.png">
 
 
 
 * Setting 메뉴 > Outputs 를 수정한다.
 
-<img src="assets\20231023_154337.png" align="left">
+<img src="assets\20231023_154337.png">
 
 
 
@@ -226,7 +226,7 @@ $ kubectl create -f fleet-server.yaml
 * Advanced YAML configuration
   * ssl.verification_mode: none
 
-<img src="assets\20231023_013026.png" align="left">
+<img src="assets\20231023_013026.png">
 
 
 
@@ -249,7 +249,7 @@ $ kubectl apply -k kube-state-metrics
 
 #### 2. Elastic Agent 설치
 
-<img src="assets\20231023_162528.png" align="left">
+<img src="assets\20231023_162528.png">
 
 
 
@@ -257,19 +257,19 @@ $ kubectl apply -k kube-state-metrics
 
   * default 입력 후 Create policy 클릭
 
-    <img src="assets\20231023_163119.png" align="left">
+    <img src="assets\20231023_163119.png">
 
     
 
   * Enroll in Fleet 선택
 
-    <img src="assets\20231023_163305.png" align="left">
+    <img src="assets\20231023_163305.png">
 
     
 
   * Kubernetes 선택 > FLEET_ENROLLMENT_TOKEN 값 복사
 
-    <img src="assets\20231023_170026.png" align="left">
+    <img src="assets\20231023_170026.png">
 
   > 공식 Guide에는 아래와 같이 elastic-agent-managed-kubernetes.yml을 사용하도록 되어있으나 정상적으로 설치되지 않는다.
 
@@ -310,13 +310,13 @@ Continuing will re-install Elastic Agent over the current installation at /opt/E
 
 * Kibana로 돌아가면 자동으로 Agent 가 추가된 것을 확인할 수 있다.
 
-  <img src="assets\20231023_171352.png" align="left">
+  <img src="assets\20231023_171352.png">
   
   
   
 *  몇 분 기다리면 Agent와 연동이 완료된다.
 
-   <img src="assets\20231025_003851.png" align="left">
+   <img src="assets\20231025_003851.png">
 
 
 

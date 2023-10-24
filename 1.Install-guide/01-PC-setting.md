@@ -10,7 +10,7 @@ PC에서 ssh 접근을 할 수 있는 다양한 터미널(putty 등)이 있지�
   
 - mobaxterm 실행
 
-  <img src="assets\image-20220601194018844.png" align="left">
+  <img src="assets\image-20220601194018844.png">
 
 
 ## 2) wsl2
@@ -74,7 +74,7 @@ command 창에서 wsl 명령으로 설치여부를 확인 할 수 있다.
    - cmd 창에서 `wsl` 명령을 입력하면 바로 default linux 가 실행된다.
    - `wsl -u root` 명령으로 root 로 실행 할 수 있다.
 
-<img src="assets\image-20220601193219422.png" align="left" style="margin:0 30px">
+<img src="assets\image-20220601193219422.png" style="margin:0 30px">
 
 
 2. windows 터미널 으로 실행하는 방법
@@ -83,7 +83,7 @@ command 창에서 wsl 명령으로 설치여부를 확인 할 수 있다.
 3. mobaxterm 에서 실행
    - session > WSL 실행
 
-<img src="assets\image-20220601193859958.png" align="left" style="margin:0 30px">
+<img src="assets\image-20220601193859958.png" style="margin:0 30px">
 
 
 ## 3) docker desktop 확인
@@ -152,12 +152,12 @@ Server version 을 확인할 수 있다면 정상 설치되었다고 볼 수 있
 
 도커 데스크탑을 설치하고 설정 페이지의 **General** 탭에서 **Use the WSL2 based engine** 옵션을 체크해준다.
 
-<img src="assets\cc2fa29ced0170be569fa2babb3f37ce853a4a6edaa393ae7d7e6cf0e734809e.m.png" align="left">
+<img src="assets\cc2fa29ced0170be569fa2babb3f37ce853a4a6edaa393ae7d7e6cf0e734809e.m.png">
 
 Resource -> WSL Integration 페이지로 이동해서 설정을 확인한다. 자신이 사용중인 WSL2 배포판이 맞는지 확인한다.
 
-<img src="assets\2e6f6b874322977fd2a606fac1628628a42e0e6161aaecae4e0ca5891dda008d.m.png" align="left">
+<img src="assets\2e6f6b874322977fd2a606fac1628628a42e0e6161aaecae4e0ca5891dda008d.m.png">
 
 도커 데스크탑을 설치하고 정상적으로 설정되어있다면, 바로 WSL2 우분투 터미널에서 도커 명령어를 사용할 수 있다.
 
-<img src="assets\d0f6a634419019be2cf954e7258932a9ea28afc6a058059f54e659104003fddf.m.png" align="left">
+<img src="assets\d0f6a634419019be2cf954e7258932a9ea28afc6a058059f54e659104003fddf.m.png">
