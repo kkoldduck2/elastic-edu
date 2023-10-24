@@ -26,7 +26,7 @@ command 창에서 wsl 명령으로 설치여부를 확인 할 수 있다.
 > wsl -l -v 
 ```
 
-<img src="assets\image-20220601193023175.png" align="left">
+<img src="assets\image-20220601193023175.png">
 
 
 - 만약 version 이 1 이라면 아래와 같이 update 한다.
@@ -94,7 +94,7 @@ Container 환경 실습을 위해 docker desktop 설치가 필요하다
 
 우측 하단  docker desktop  아이콘에서 우클릭후 아래 그림 처럼 Docker Desktop is running 확인
 
-<img src="assets\image-20220601192354841.png" align="left">
+<img src="assets\image-20220601192354841.png">
 
 
 

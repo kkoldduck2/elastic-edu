@@ -1,7 +1,3 @@
-
-
-
-
 # Elastic Stack Install
 
 
@@ -24,8 +20,8 @@
 
 * Elasticsearch
 * Kibana
-* Elastic Agent
 * Fleet Server
+* Elastic Agent
 
 
 
@@ -45,9 +41,13 @@ $ helm repo add elastic https://helm.elastic.co
 $ cd elastic-edu/helm/
 $ helm install elasticsearch -f ./elasticsearch-values.yaml elastic/elasticsearch -n es --create-namespace &
 
+# 진행상황 확인
+$ kubectl get pods --namespace=es -l app=elasticsearch-master -w
+
 # log 확인
 $ kubectl logs -f elasticsearch-master-0 -n es
-{"@timestamp":"2023-09-23T10:08:50.087Z", "log.level": "WARN", "message":"This node is a fully-formed single-node cluster with cluster UUID [I5WGB0BBS3KARCnW4666qw], but it is configured as if to discover other nodes and form a multi-node cluster via the [discovery.seed_hosts=[elasticsearch-master-headless]] setting. Fully-formed clusters do not attempt to discover other nodes, and nodes with different cluster UUIDs cannot belong to the same cluster. The cluster UUID persists across restarts and can only be changed by deleting the contents of the node's data path(s). Remove the discovery configuration to suppress this message.", "ecs.version": "1.2.0","service.name":"ES_ECS","event.dataset":"elasticsearch.server","process.thread.name":"elasticsearch[elasticsearch-master-0][scheduler][T#1]","log.logger":"org.elasticsearch.cluster.coordination.Coordinator","elasticsearch.cluster.uuid":"I5WGB0BBS3KARCnW4666qw","elasticsearch.node.id":"F6nUdmCnTDeHjpcIPukrdQ","elasticsearch.node.name":"elasticsearch-master-0","elasticsearch.cluster.name":"elasticsearch"} => 설치 끝
+{"@timestamp":"2023-10-24T08:51:23.736Z", "log.level": "INFO",  "current.health":"YELLOW","message":"Cluster health status changed from [RED] to [YELLOW] (reason: [shards started [[.apm-so 
+=> 설치 끝
 
 # port forward
 $ kubectl port-forward -n es elasticsearch-master-0 9200:9200 &
@@ -104,6 +104,9 @@ elasticsearch에 이어 kibana도 수정한 values.yaml을 이용하여 설치�
 # kibana value 파일로 배포하기
 $ helm install kibana elastic/kibana -f ./kibana-values.yaml -n es &
 
+# 진행상황 확인
+$ kubectl get pods --namespace=es -l release=kibana -w
+
 # log 확인
 $ kubectl logs -f svc/kibana-kibana -n es
 [2023-09-23T10:06:10.897+00:00][INFO ][plugins.synthetics] Installed synthetics index templates => 설치 끝
@@ -132,6 +135,7 @@ $ curl -v http://localhost:5601
 Elastic Agent를 관리하기 위한 Fleet Server를 설치한다.
 
 ``` bash
+# elastic agent를 관리하기 위한 다양한 role 추가
 $ kubectl create -f elastic-agent-role-clusterrole-serviceaccount.yaml
 ```
 
@@ -249,7 +253,7 @@ $ kubectl apply -k kube-state-metrics
 
 
 
-*  Add agent
+* Add agent
 
   * default 입력 후 Create policy 클릭
 
@@ -267,52 +271,52 @@ $ kubectl apply -k kube-state-metrics
 
     <img src="assets\20231023_170026.png" align="left">
 
+  > 공식 Guide에는 아래와 같이 elastic-agent-managed-kubernetes.yml을 사용하도록 되어있으나 정상적으로 설치되지 않는다.
+
   * elastic-agent-managed-kubernetes.yml 파일 수정
 
     ```bash
     # 복사한 FLEET_ENROLLMENT_TOKEN 값 수정
     $ vi elastic-agent-managed-kubernetes.yml
     
-    # elastic-agent 설치를 위한 namespace 생성
-    $ kubectl create namespace es-ds
-    
     # elastic-agent daemonset 생성
-    $ kubectl apply -f elastic-agent-managed-kubernetes.yml -n es-ds
+    $ kubectl apply -f elastic-agent-managed-kubernetes.yml
     ```
+
+  
+
+  > Elastic Agent는 수동 설치 방식으로 설치한다.
+
+  ```bash
+  # elastic agent 다운로드
+  $ curl -L -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.9.2-linux-x86_64.tar.gz
+  # 압축 해제
+  $ tar xzvf elastic-agent-8.9.2-linux-x86_64.tar.gz
+  $ cd elastic-agent-8.9.2-linux-x86_64
+  
+  # port forward
+  $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
+  
+  # elastic agent 설치
+  $ sudo ./elastic-agent install --url=https://localhost:8220 --enrollment-token=dEhvZllvc0JQYVdoOGlEc2VpY1A6TmhJMFU2VDRTVWExbTZvY3lMdjJNQQ== --insecure
+  [sudo] password for jay:
+  Elastic Agent is installed but currently broken: service exists but installation path is missing
+Continuing will re-install Elastic Agent over the current installation at /opt/Elastic/Agent. Do you want to continue? [Y/n]:y
+  ```
+  
+  
+
+
 
 * Kibana로 돌아가면 자동으로 Agent 가 추가된 것을 확인할 수 있다.
 
   <img src="assets\20231023_171352.png" align="left">
+  
+  
+  
+*  몇 분 기다리면 Agent와 연동이 완료된다.
 
-
-
-
-
-
-
-##### 수동으로 Elastic agent 설치하는 방법 (미 사용)
-
-데이터 수집을 위해서는 수집을 원하는 host에 elastic agent를 설치한다.
-
-``` bash
-# elastic agent 다운로드
-$ curl -L -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.9.2-linux-x86_64.tar.gz
-# 압축 해제
-$ tar xzvf elastic-agent-8.9.2-linux-x86_64.tar.gz
-$ cd elastic-agent-8.9.2-linux-x86_64
-$ sudo ./elastic-agent install \
-  --fleet-server-es=http://localhost:9200 \
-  --fleet-server-service-token=AAEAAWVsYXN0aWMvZmxlZXQtc2VydmVyL3Rva2VuLTE2OTc5ODcxNzAwOTA6bkFFNnZVczZSOVNpcDZuZ1dxUUU1UQ \
-  --fleet-server-policy=76e1a640-70e7-11ee-91f5-835a208b6035 \
-  --fleet-server-port=8220
-[sudo] password for jay:
-Elastic Agent will be installed at /opt/Elastic/Agent and will run as a service. Do you want to continue? [Y/n]:y
-
-
-```
-
-
-
+   <img src="assets\20231025_003851.png" align="left">
 
 
 

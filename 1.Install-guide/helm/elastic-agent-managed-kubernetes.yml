@@ -4,7 +4,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: elastic-agent
-  namespace: es-ds
+  namespace: es
   labels:
     app: elastic-agent
 spec:
@@ -46,9 +46,9 @@ spec:
             # Elasticsearch API key used to enroll Elastic Agents in Fleet (https://www.elastic.co/guide/en/fleet/current/fleet-enrollment-tokens.html#fleet-enrollment-tokens)
             # If FLEET_ENROLLMENT_TOKEN is empty then KIBANA_HOST, KIBANA_FLEET_USERNAME, KIBANA_FLEET_PASSWORD are needed
             - name: FLEET_ENROLLMENT_TOKEN
-              value: "bWFod1c0c0JjRnlxWmJ0aVJxMEI6SEVNSmd1ODBSZnktb3B2enpUTDZ3QQ=="
+              value: "dEhvZllvc0JQYVdoOGlEc2VpY1A6TmhJMFU2VDRTVWExbTZvY3lMdjJNQQ=="
             - name: KIBANA_HOST
-              value: "https://kibana-kibana.es.svc:5601"
+              value: "http://kibana-kibana.es.svc:5601"
             # The basic authentication username used to connect to Kibana and retrieve a service_token to enable Fleet
             - name: KIBANA_FLEET_USERNAME
               value: "elastic"
@@ -170,7 +170,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: elastic-agent
-    namespace: es-ds
+    namespace: es
 roleRef:
   kind: ClusterRole
   name: elastic-agent
@@ -179,12 +179,12 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  namespace: es-ds
+  namespace: es
   name: elastic-agent
 subjects:
   - kind: ServiceAccount
     name: elastic-agent
-    namespace: es-ds
+    namespace: es
 roleRef:
   kind: Role
   name: elastic-agent
@@ -194,11 +194,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: elastic-agent-kubeadm-config
-  namespace: es-ds
+  namespace: es
 subjects:
   - kind: ServiceAccount
     name: elastic-agent
-    namespace: es-ds
+    namespace: es
 roleRef:
   kind: Role
   name: elastic-agent-kubeadm-config
@@ -279,7 +279,7 @@ kind: Role
 metadata:
   name: elastic-agent
   # Should be the namespace where elastic-agent is running
-  namespace: es-ds
+  namespace: es
   labels:
     k8s-app: elastic-agent
 rules:
@@ -293,7 +293,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: elastic-agent-kubeadm-config
-  namespace: es-ds
+  namespace: es
   labels:
     k8s-app: elastic-agent
 rules:
@@ -308,7 +308,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: elastic-agent
-  namespace: es-ds
+  namespace: es
   labels:
     k8s-app: elastic-agent
 ---

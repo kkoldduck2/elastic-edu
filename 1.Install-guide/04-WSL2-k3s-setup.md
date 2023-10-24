@@ -155,7 +155,9 @@ $ vi ~/.bashrc
 alias k='kubectl'
 alias kk='kubectl -n kube-system'
 alias kpes='kubectl get pods -n es'
-alias kd='kubectl delete'
+alias kdp='kubectl delete pod'
+alias kds='kubectl delete service'
+alias kdd='kubectl delete deployment'
 alias kall='kubectl get all'
 
 ## alias 를 적용하려면 source 명령 수행
