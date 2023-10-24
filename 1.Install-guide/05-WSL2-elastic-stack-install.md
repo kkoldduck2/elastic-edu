@@ -302,11 +302,6 @@ $ kubectl apply -k kube-state-metrics
   [sudo] password for jay:
   Elastic Agent is installed but currently broken: service exists but installation path is missing
 Continuing will re-install Elastic Agent over the current installation at /opt/Elastic/Agent. Do you want to continue? [Y/n]:y
-  ```
-  
-  
-
-
 
 * Kibana로 돌아가면 자동으로 Agent 가 추가된 것을 확인할 수 있다.
 
