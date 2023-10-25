@@ -1,4 +1,4 @@
----
+ ---
 # For more information https://www.elastic.co/guide/en/fleet/current/running-on-kubernetes-managed-by-fleet.html
 apiVersion: apps/v1
 kind: DaemonSet
@@ -42,13 +42,13 @@ spec:
             # Fleet Server URL to enroll the Elastic Agent into
             # FLEET_URL can be found in Kibana, go to Management > Fleet > Settings
             - name: FLEET_URL
-              value: "https://10.109.210.170:8220"
+              value: "https://fleet-server.es.svc:8220"
             # Elasticsearch API key used to enroll Elastic Agents in Fleet (https://www.elastic.co/guide/en/fleet/current/fleet-enrollment-tokens.html#fleet-enrollment-tokens)
             # If FLEET_ENROLLMENT_TOKEN is empty then KIBANA_HOST, KIBANA_FLEET_USERNAME, KIBANA_FLEET_PASSWORD are needed
             - name: FLEET_ENROLLMENT_TOKEN
-              value: "T19NcV9vb0J0UzhkOENzdnhPTHY6WHkzZHNwaWdTV3lBRnhSekp0aVdOdw=="
+              value: "Y2lad1pJc0J6UjJDUVAyZE9FMnU6Sk42ZjROQ19UYVN3S1dZVE5NMW9LQQ=="
             - name: KIBANA_HOST
-              value: "http://10.96.222.90:5601"
+              value: "https://kibana-kibana.es.svc:32275"
             # The basic authentication username used to connect to Kibana and retrieve a service_token to enable Fleet
             - name: KIBANA_FLEET_USERNAME
               value: "elastic"
@@ -83,10 +83,10 @@ spec:
             #    - SYS_ADMIN
           resources:
             limits:
-              memory: 700Mi
+              memory: 500Mi   # 500
             requests:
               cpu: 100m
-              memory: 400Mi
+              memory: 200Mi   # 200
           volumeMounts:
             - name: proc
               mountPath: /hostfs/proc
