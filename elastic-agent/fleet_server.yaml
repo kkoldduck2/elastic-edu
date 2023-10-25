@@ -20,15 +20,15 @@ spec:
       containers:
       - name: integration-server
         image: docker.elastic.co/beats/elastic-agent:8.9.2
-        env:                                                                               
+        env:
         - name: FLEET_SERVER_ENABLE                                                         ## Fleet Server 역할 부여(1 = True)
           value: "1"
         - name: FLEET_SERVER_ELASTICSEARCH_HOST                                             ## Elasticseach service host와 port 설정
-          value: https://10.103.56.106:9200                                                 ## Kubernetes -> elasticsearch service ip 주소로 변경
+          value: https://elasticsearch-master:9200                                                 ## Kubernetes -> elasticsearch service ip 주소로 변경
         - name: FLEET_SERVER_POLICY_NAME                                                    ## Kibana에서 생성한 Fleet Server agent policy 이름            -> 위에 나온 name 값 입력
           value: fleet-server-policy
         - name: FLEET_SERVER_SERVICE_TOKEN                                                  ## Kibana에서 생성한 Fleet Server agent policy의 service token -> 위에 나온 token 값 입력
-          value: AAEAAWVsYXN0aWMvZmxlZXQtc2VydmVyL3Rva2VuLTE2OTY0MDc5MDcxNzQ6RzBVYWVJU2FTVmlHU2hNLUc1dTVLdw
+          value: AAEAAWVsYXN0aWMvZmxlZXQtc2VydmVyL3Rva2VuLTE2OTY4NjI5Mjg3OTU6MHJsajhwV0tUTXljbHFNSzdXcTRvQQ
         - name: FLEET_SERVER_ELASTICSEARCH_INSECURE                                         ## 인증서 검증 절차를 스킵
           value: "1"
         - name: FLEET_SERVER_PORT                                                           ## Fleet Server port 설정, 일반적으로 8220 사용
@@ -37,9 +37,9 @@ spec:
         - containerPort: 8220                                                               ## Fleet Server용 port 설정
           protocol: TCP
         # - containerPort: 8200                                                               ## APM Server용 port 사전 설정
-        #   protocol: TCP    
-      # nodeSelector:                                                                         ## node selector 설정                                                                
-      #   es: 'true'
+        #   protocol: TCP
+      #nodeSelector:                                                                         ## node selector 설정
+        #es: 'true'
       #   sa: 'true'
       serviceAccount: elastic-agent                                                         ## service account는 role, role-binding에서 설정한 serviceaccount 사용
 ---
