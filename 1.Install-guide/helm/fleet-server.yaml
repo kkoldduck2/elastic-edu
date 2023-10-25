@@ -19,35 +19,46 @@ spec:
     spec:
       containers:
       - name: integration-server
-        image: docker.elastic.co/beats/elastic-agent:8.9.2
+        image: docker.elastic.co/beats/elastic-agent:8.10.4
         env:
-        - name: FLEET_SERVER_ENABLE                                                         ## Fleet Server 역할 부여(1 = True)
+        # Fleet Server 역할 부여(1 = True)
+        - name: FLEET_SERVER_ENABLE
           value: "1"
-        - name: FLEET_SERVER_ELASTICSEARCH_HOST                                             ## Elasticseach service host와 port 설정
-          value: https://elasticsearch-master:9200                                          ## Kubernetes -> elasticsearch service ip 주소로 변경
-        - name: FLEET_SERVER_POLICY_NAME                                                    ## Kibana에서 생성한 Fleet Server agent policy 이름            -> 위에 나온 name 값 입력
+        # Elasticseach service host와 port 설정
+        - name: FLEET_SERVER_ELASTICSEARCH_HOST
+          value: https://elasticsearch-master:9200
+        # Kibana에서 생성한 Fleet Server agent policy 이름            -> 위에 나온 name 값 입력
+        - name: FLEET_SERVER_POLICY_NAME                                                    
           value: fleet-server-policy
-        - name: FLEET_SERVER_SERVICE_TOKEN                                                  ## Kibana에서 생성한 Fleet Server agent policy의 service token -> 위에 나온 token 값 입력
-          value: AAEAAWVsYXN0aWMvZmxlZXQtc2VydmVyL3Rva2VuLTE2OTc5ODk0MjQwNzg6WFBIeGxtQXpULTJLcm9UUnhQdTNZZw
-        - name: FLEET_SERVER_ELASTICSEARCH_INSECURE                                         ## 인증서 검증 절차를 스킵
+        - name: FLEET_SERVER_SERVICE_TOKEN                                                  
+        # Kibana에서 생성한 Fleet Server agent policy의 service token -> 위에 나온 token 값 입력
+          value: AAEAAWVsYXN0aWMvZmxlZXQtc2VydmVyL3Rva2VuLTE2OTgwNjQ1MzE4MjA6MXVHdUxlTnJURUc5cktud2hVV04xQQ
+        # 인증서 검증 절차를 스킵
+        - name: FLEET_SERVER_ELASTICSEARCH_INSECURE                                         
           value: "1"
-        - name: FLEET_SERVER_PORT                                                           ## Fleet Server port 설정, 일반적으로 8220 사용
+        # Fleet Server port 설정, 일반적으로 8220 사용
+        - name: FLEET_SERVER_PORT                                                           
           value: "8220"
+        # Fleet Server용 port 설정
         ports:
-        - containerPort: 8220                                                               ## Fleet Server용 port 설정
+        - containerPort: 8220      
+        # APM Server용 port 사전 설정                                                         
           protocol: TCP
-        # - containerPort: 8200                                                             ## APM Server용 port 사전 설정
+        # - containerPort: 8200                                                               
         #   protocol: TCP
-      # nodeSelector:                                                                         ## node selector 설정
+      # node selector 설정
+      # nodeSelector:                                                                         
       #   es: 'true'
       #   sa: 'true'
-      serviceAccount: elastic-agent                                                         ## service account는 role, role-binding에서 설정한 serviceaccount 사용
+      # service account는 role, role-binding에서 설정한 serviceaccount 사용
+      serviceAccount: elastic-agent                                                         
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: fleet-server                                                                        ## Fleet Server용 service
-  namespace: es                                                                 ## 일반적으로 8220 port 사용
+  ## Fleet Server용 service
+  name: fleet-server                                                                        
+  namespace: es                                                                 
   labels:
     k8s-app: elastic-agent
     app: integration-server
@@ -57,6 +68,7 @@ spec:
     app: integration-server
   ports:
   - name: http
+    ## 일반적으로 8220 port 사용
     port: 8220
     protocol: TCP
     targetPort: 8220

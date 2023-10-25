@@ -57,6 +57,8 @@ $ curl https://localhost:9200 -k -u 'elastic:new1234!'
 
 ```
 
+
+
 ### [참고] Pod 상태가 ImagePullBackOff 인 경우
 
 ``` bash
@@ -80,7 +82,7 @@ Events:
   Normal   BackOff           2m (x33 over 20m)  kubelet            Back-off pulling image "docker.elastic.co/elasticsearch/elasticsearch:8.9.2"
 
 # docker pull 명령으로 직접 이미지를 다운로드 한다.
-docker pull docker.elastic.co/elasticsearch/elasticsearch:8.9.2
+docker pull docker.elastic.co/elasticsearch/elasticsearch:8.10.4
 
 # pod가 Ready 상태가 됐는지 다시 확인한다.
 $ kubectl get pods --namespace=es
@@ -91,8 +93,6 @@ elasticsearch-master-0   1/1     Running   0          38m
 $ kubectl logs -f elasticsearch-master-0 -n es
 
 ```
-
-
 
 
 
@@ -198,6 +198,9 @@ $ vi fleet-server.yaml
 
 # fleet server 설치
 $ kubectl create -f fleet-server.yaml
+
+# port forward
+$ kubectl port-forward -n es svc/fleet-server 8220:8220 &
 ```
 
 * 잠시 기다리면 자동으로 Fleet Server와 Connect 된다.
@@ -220,13 +223,20 @@ $ kubectl create -f fleet-server.yaml
 
 
 
+* Name
+  * local-agent
 * Hosts
   * https://elasticsearch-master:9200
-
 * Advanced YAML configuration
   * ssl.verification_mode: none
 
 <img src="assets\20231023_013026.png">
+
+
+
+* Agent policies > 메뉴 > Outputs 를 수정한다.
+
+
 
 
 
@@ -255,53 +265,61 @@ $ kubectl apply -k kube-state-metrics
 
 * Add agent
 
-  * default 입력 후 Create policy 클릭
+  * ① Name : Agent policy 1 > 수정 없음
 
-    <img src="assets\20231023_163119.png">
-
-    
-
-  * Enroll in Fleet 선택
-
-    <img src="assets\20231023_163305.png">
+  * ② Enroll in Fleet > Enroll in Fleet (recommended) > 수정 없음default 입력 후 Create policy 클릭
 
     
 
-  * Kubernetes 선택 > FLEET_ENROLLMENT_TOKEN 값 복사
+    <img src="assets\20231025_231455.png">
 
-    <img src="assets\20231023_170026.png">
-
-  > 공식 Guide에는 아래와 같이 elastic-agent-managed-kubernetes.yml을 사용하도록 되어있으나 정상적으로 설치되지 않는다.
-
-  * elastic-agent-managed-kubernetes.yml 파일 수정
-
-    ```bash
-    # 복사한 FLEET_ENROLLMENT_TOKEN 값 수정
-    $ vi elastic-agent-managed-kubernetes.yml
     
-    # elastic-agent daemonset 생성
-    $ kubectl apply -f elastic-agent-managed-kubernetes.yml
-    ```
 
-  
+  * ③ Install Elastic Agent on your hosts
 
-  > Elastic Agent는 수동 설치 방식으로 설치한다.
+  > GCP에서는 정상적으로 적용되나, Windows 환경에서는 메모리 부족 등으로 정상적으로 설치되지 않아 하단 Windows 환경 수동 설치로 진행한다.
+
+  * (Skip) ~~elastic-agent-managed-kubernetes.yml 파일 수정~~
 
   ```bash
-  # elastic agent 다운로드
-  $ curl -L -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.9.2-linux-x86_64.tar.gz
-  # 압축 해제
-  $ tar xzvf elastic-agent-8.9.2-linux-x86_64.tar.gz
-  $ cd elastic-agent-8.9.2-linux-x86_64
+  # 복사한 FLEET_ENROLLMENT_TOKEN 값 수정
+  $ vi elastic-agent-managed-kubernetes.yml
   
-  # port forward
-  $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
+  # elastic-agent daemonset 생성
+  $ kubectl apply -f elastic-agent-managed-kubernetes.yml
+  ```
+
+  > Windows 환경에서는 수동으로 Elastic Agent를 설치한다.
+
+  * Powershell을 관리자 권한으로 실행
+
+    <img src="assets\20231025_232634.png">
   
-  # elastic agent 설치
-  $ sudo ./elastic-agent install --url=https://localhost:8220 --enrollment-token=dEhvZllvc0JQYVdoOGlEc2VpY1A6TmhJMFU2VDRTVWExbTZvY3lMdjJNQQ== --insecure
-  [sudo] password for jay:
-  Elastic Agent is installed but currently broken: service exists but installation path is missing
-Continuing will re-install Elastic Agent over the current installation at /opt/Elastic/Agent. Do you want to continue? [Y/n]:y
+* ③ Install Elastic Agent on your hosts > Windows를 선택한다.
+  
+  
+    <img src="assets\20231023_170026.png">
+
+  
+
+* Windows에 있는 내용을 복사하여 관리자:Powershell에서 실행한다.
+  
+  ```bash
+    $ d:
+    $ mkdir temp
+    $ cd temp
+    $ $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.10.4-windows-x86_64.zip -OutFile elastic-agent-8.10.4-windows-x86_64.zip
+    $ Expand-Archive .\elastic-agent-8.10.4-windows-x86_64.zip -DestinationPath .
+    $ cd elastic-agent-8.10.4-windows-x86_64
+    
+    # Token 값 뒤에 --insecure 옵션을 추가한다.
+    $ .\elastic-agent.exe install --url=https://localhost:8220 --enrollment-token=dEhvZllvc0JQYVdoOGlEc2VpY1A6TmhJMFU2VDRTVWExbTZvY3lMdjJNQQ== --insecure
+  ```
+  
+    <img src="assets\20231025_233200.png">
+
+
 
 * Kibana로 돌아가면 자동으로 Agent 가 추가된 것을 확인할 수 있다.
 
@@ -312,6 +330,63 @@ Continuing will re-install Elastic Agent over the current installation at /opt/E
 *  몇 분 기다리면 Agent와 연동이 완료된다.
 
    <img src="assets\20231025_003851.png">
+
+
+
+* Fleet > Settings > Outputs > Add output을 클릭한다.
+
+  <img src="assets\20231025_235313.png">
+
+
+
+* Name
+  
+  * es-master
+  
+* Hosts
+
+  * https://elasticsearch-master:9200
+
+* Advanced YAML configuration
+
+  * ssl.verification_mode: none
+
+* Save and apply settings
+
+  <img src="assets\20231025_235904.png">
+
+
+
+* Fleet > Agent policies > fleet-server-policy를 선택한다.
+
+  
+
+  <img src="assets\20231026_000854.png">
+
+
+
+* fleet-server-policy > Settings를 선택한다.
+
+  <img src="assets\20231026_001144.png">
+
+* Agent monitoring
+
+  * Collect agent logs, Collect agent metrics
+
+* Output for integrations
+
+  * es-master
+
+* Output for agent monitoring
+
+  * es-master
+
+  <img src="assets\20231026_001454.png">
+
+  
+
+  
+
 
 
 
