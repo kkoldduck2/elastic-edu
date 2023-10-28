@@ -40,7 +40,7 @@ k8s 환경에서는 helm chart를 이용하면 다양한 솔루션들을 손 쉽
 $ helm repo add elastic https://helm.elastic.co
 
 # minimal하게 수정한 elasticsearch value 파일로 배포하기
-$ cd elastic-edu/helm/
+$ cd elastic-edu/2.Install-guide/helm
 $ helm install elasticsearch -f ./elasticsearch-values.yaml elastic/elasticsearch -n es --create-namespace &
 
 # 진행상황 확인
@@ -198,6 +198,9 @@ $ kubectl create -f elastic-agent-role-clusterrole-serviceaccount.yaml
 # token 값 수정 후 저장
 $ vi fleet-server.yaml
 
+# tocket value로 마우스 커서를 옮긴 뒤 $를 입력하고 a를 입력 후 text를 지운다. 
+# 마우스 오른쪽을 클릭하여 복사한 내용을 붙이고 :wq! 를 입력하여 저장한다.
+
 # fleet server 설치 (설치 시 fleet server와 Integration server가 둘 다 설치된다.)
 $ kubectl create -f fleet-server.yaml
 
@@ -234,9 +237,17 @@ $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
 
 
 
-* Setting 메뉴 > Outputs 를 수정한다.
+* Elasticsearch, Kibana, Fleet Server까지 기본 설치 완료
 
-<img src="assets\20231023_154337.png">
+ <img src="assets/install-status01.png">
+
+
+
+* Setting 메뉴 > Outputs 에서 Fleet server → Elasticsearch 로 데이터 전송이 될 수 있게 설정한다.
+
+ 
+
+ <img src="assets\20231023_154337.png">
 
 
 
@@ -247,13 +258,7 @@ $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
 * Advanced YAML configuration
   * ssl.verification_mode: none
 
-<img src="assets\20231023_013026.png">
-
-
-
-* Agent policies > 메뉴 > Outputs 를 수정한다.
-
-
+ <img src="assets\20231023_013026.png">
 
 
 
@@ -273,9 +278,9 @@ $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
 
 * Add agent
 
-  * ① Name : Agent policy 1 > 수정 없음
+  * ① Name : Agent policy 1 > Create Policy
 
-  * ② Enroll in Fleet > Enroll in Fleet (recommended) > 수정 없음default 입력 후 Create policy 클릭
+  * ② Enroll in Fleet > Enroll in Fleet (recommended) > 수정 없음
 
     
 
@@ -285,7 +290,9 @@ $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
 
   * ③ Install Elastic Agent on your hosts
 
-  > GCP에서는 정상적으로 적용되나, Windows 환경에서는 메모리 부족 등으로 정상적으로 설치되지 않아 하단 Windows 환경 직접 설치로 진행한다.
+  > GCP에서는 정상적으로 적용되나, Windows 환경에서는 메모리 부족 등으로 정상적으로 설치되지 않는다.
+>
+  > 하단 **2. Windows 환경에 Elastic Agent 설치하기**로 진행한다.
 
   * (Skip) ~~elastic-agent-managed-kubernetes.yml 파일 수정~~
 
@@ -294,7 +301,7 @@ $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
   $ vi elastic-agent-managed-kubernetes.yml
   
   # elastic-agent daemonset 생성
-  $ kubectl apply -f elastic-agent-managed-kubernetes.yml
+$ kubectl apply -f elastic-agent-managed-kubernetes.yml
   ```
 
   
@@ -326,6 +333,8 @@ $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
     
   # **** 중요!! Token 값 뒤에 --insecure 옵션을 추가한다.
   $ .\elastic-agent.exe install --url=https://localhost:8220 --enrollment-token=UVV5emFZc0JNMmpVM1h5WkR2OFg6b1ItdVZqWFZSVEtOT1dOQXU2c0M4UQ== --insecure
+  
+  $ Elastic Agent will be installed at C:\Program Files\Elastic\Agent and will run as a service. Do you want to continue? [Y/n]:y
   
   # 만약 --insecure 옵션을 추가 하지 않은 경우 elastic agent를 삭제 후 재 설치 한다.
   $ C:\"Program Files"\Elastic\Agent\elastic-agent.exe uninstall  
@@ -359,7 +368,7 @@ $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
   
 * Hosts
 
-  * https://elasticsearch-master:9200
+  * https://localhost:9200
 
 * Advanced YAML configuration
 
@@ -383,17 +392,13 @@ $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
 
   <img src="assets\20231026_001144.png">
 
-* Agent monitoring
-
-  * Collect agent logs, Collect agent metrics
-
 * Output for integrations
 
-  * es-master
+  * fleet-es
 
 * Output for agent monitoring
 
-  * es-master
+  * fleet-es
 
   <img src="assets\20231026_001454.png">
 

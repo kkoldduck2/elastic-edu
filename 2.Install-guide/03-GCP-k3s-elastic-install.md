@@ -338,7 +338,7 @@ helm chart를 이용하면 손 쉽게 설치할 수 있다. (Elastic 공식 Helm
 $ helm repo add elastic https://helm.elastic.co
 
 # minimal하게 수정한 elasticsearch value 파일로 배포하기
-$ cd elastic-edu/helm/
+$ cd elastic-edu/2.Install-guide/helm/
 $ helm install elasticsearch -f ./elasticsearch-values.yaml elastic/elasticsearch -n es --create-namespace &
 
 # log 확인
