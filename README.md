@@ -39,8 +39,8 @@
 * [Dashboard 생성하기](./3.User-guide/02-Dashboard.md)
 
 
-5) 초기화하기
+6) 초기화하기
 * [Local 환경 초기화하기](./2.Install-guide/08-Initialization.md)
 
-6) 참고사이트
+7) 참고사이트
 * [참고사이트](./3.User-guide/03-reference-site.md)
