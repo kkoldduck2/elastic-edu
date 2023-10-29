@@ -329,7 +329,7 @@ shift+s : 선택한 Pod에 대한 쉘 접속
 
 helm chart를 이용하면 손 쉽게 설치할 수 있다. (Elastic 공식 Helm Chart : https://github.com/elastic/helm-charts)
 
-23.09.27 기준 8.5.1 Release 제공중이며, 본 교육에서는 공식 helm chart를 수정하여 v8.9.2, minimal size로 설치한다. (최소 Mem 4GB 이상 필요)
+23.09.27 기준 8.5.1 Release 제공중이며, 본 교육에서는 공식 helm chart를 수정하여 v8.10.4, minimal size로 설치한다. (최소 Mem 4GB 이상 필요)
 
 다음 명령어로 elastic helm repo를 가져온 후, elastic-edu git에서 가져온  values.yaml을 이용하여 배포한다. namespace는 es로 설정하였다.
 

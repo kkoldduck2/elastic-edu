@@ -27,17 +27,16 @@
 * ① Configure integration
 
   * Integration name
-    * sample-log
+    * ap-sample-log
   * Log file path (D:\ \backslash 2개를 입력해야한다. )
     * git에서 다운받은 경로 sample 폴더 경로를 입력한다.
     * D:\\*.log
   * Dataset name
-    * 검색이 쉬운 이름으로 입력한
-    * sample-aplog
-
+    * ap-sample-log
+  
 * ② Existing hosts > 를 선택하고 Agent Policy 1 선택
 
-   <img src="assets\20231026_004213.png">
+ <img src="assets\20231026_004213.png">
 
 
 
@@ -53,6 +52,8 @@
 
 
 
+
+
 ## 2) Data view 생성하기
 
 *  좀 전에 추가한 smaple-log만 검색하기 위해 Data view를 생성한다.
@@ -64,9 +65,9 @@
 
 * Create data view
 * Name
-  * edu-aplog
+  * sample-aplog
 * Index pattern
-  * logs-test*
+  * logs-ap*
 * Save data view to Kibana
 
 
@@ -76,6 +77,14 @@
 <img src="assets\20231026_175723.png">
 
 
+
+* 수집된 데이터를 확인해보면 metric 정보는 각 필드로 parsing되어있고 ap에서 남기는 로그는 message 항목에 저장된 것을 확인할 수 있다.
+
+ <img src="assets/20231029_201946.png">
+
+
+
+* 데이터 내용을 좀 더 쉽게 확인하기 위해 Ingetst Pipeline을 이용하여 message 필드 안에 있는 데이터를 Parsing 한다.
 
 
 
@@ -225,13 +234,6 @@ PUT _ingest/pipeline/ap-log-pipeline-json
     },
     {
       "rename": {
-        "field": "GLOBAL_NO",
-        "target_field": "header.globalNo",
-        "ignore_missing": true
-      }
-    },
-    {
-      "rename": {
         "field": "MESSAGE",
         "target_field": "message",
         "ignore_missing": true
@@ -310,15 +312,17 @@ PUT _ingest/pipeline/ap-log-pipeline-json
   
 
   * Processor 유형 : JSON
-  * Field : message -> message 컬럼을 Root로 지정하고 message 필드 안에 있는 필드를 하나씩 추출한다
+  * Field : message -> message 컬럼을 Root로 지정하고 message 필드 안에 있는 필드를 하나씩 추출예시
 
   <img src="assets\20231026_181349.png">
 
   
 
-  * Processor : remove 불필요한 필드를 삭제한다.
+  * Processor : remove 불필요한 필드 삭제 예시
 
   <img src="assets\20231026_181549.png">
+  
+  
 
 ## 4) Ingest Pipeline 테스트 하기
 
@@ -359,11 +363,11 @@ PUT _ingest/pipeline/ap-log-pipeline-json
 
 
 
-## 5) 불필요 항목 drop 처리 하기
+## 5) 추가 Parsing 정보 입력 하기
 
-* 로그 수집 시 필요한 정보가 아닌, 제외가 필요한 경우 drop_event를 추가한다. 
-* Integration > Custom Logs > sample-log 선택
-   <img src="assets\20231028_234337.png">
+* 로그를 수집하다보면 불필요한 로그도 수집되므로 제외가 필요한 경우 drop_event를 추가한다. 
+* Fleet > Agent policies > Agent policy 1 선택
+   <img src="assets\20231029_130810.png">
 
 
 
@@ -382,7 +386,7 @@ PUT _ingest/pipeline/ap-log-pipeline-json
             message: '^[^{]'
     ```
 
-  * Custom configurations에 아래 내용을 추가한다.
+  * Custom configurations에 아래 내용을 추가한다. > 설명 보완해야함... java에서 뭔가 처리하는 내용인듯..
 
     ```json
     ndjson.target: ""
@@ -398,35 +402,17 @@ PUT _ingest/pipeline/ap-log-pipeline-json
 
 ​	  <img src="assets\20231026_182220.png">
 
+## 6) 작성한 pipeline 연결하기
+
 * Add custom pipeline을 선택한다.
 
  <img src="assets\20231026_182256.png">
 
-* 오른쪽 하단 Save integration을 클릭한다.
-
- <img src="assets\20231026_182632.png">
-
- <img src="assets\20231029_005136.png">
-
-
-
-## 6) 신규 Pipeline 추가하기
-
-
-
-* Ingest Pipelines 오른쪽에서 Create pipeline > New pipeline을 선택한다.
-
-  <img src="assets\20231029_010840.png">
-
-
-
-
-
 * "Add a processor"를 클릭한다.
 
-  <img src="assets\20231029_011001.png">
+ <img src="assets\20231029_171959.png">
 
-  
+
 
 * 아래의 내용으로 신규 Pipeline을 추가한다.
 
@@ -434,61 +420,32 @@ PUT _ingest/pipeline/ap-log-pipeline-json
   * Pipeline name : ap-log-pipeline-json
   * Add Processor 선택
 
-<img src="assets\20231026_182540.png">
+ <img src="assets\20231026_182540.png">
+
+
+
+   <img src="assets\20231026_182607.png">
 
 
 
 
 
-<img src="assets\20231026_182607.png">
+* 오른쪽 하단 Save integration을 클릭한다.
+
+ <img src="assets\20231026_182632.png">
 
 
 
+* Save and deploy changes 버튼을 클릭한다.
 
-
-<img src="assets\20231026_182632.png">
-
-
-
-
-
-<img src="assets\20231029_011534.png">
-
-20231029_011534.png
+ <img src="assets\20231029_005136.png">
 
 
 
-<img src="assets\20231026_182706.png">
+* 신규로 수집되는 데이터 부터 변경된 Pipeline이 적용되므로 로그 수집 경로에 log 파일을 하나 더 복사해서 붙여 넣는다. 
+
+ <img src="assets/20231029_202600.png">
 
 
 
-D:\\log 파일을 복사해서 다른 이름으로 생성하면
-
-discover에서 보고싶은 컬럼 선택...
-
-
-
-대시보드 생성
-
-
-
-<img src="assets\20231026_183329.png">
-
-
-
-ignore_missing : 데이터가 없으면 생략한다.
-
-
-
-이렇게 컬럼별로 분리하는 이유는 검색속도를 향상하기 위해 분리함.
-
-검색 시에도 0000:0000 으로 하면 검색속도가 더 빨라짐.
-
-
-
-<img src="assets\20231026_185055.png">
-
-
-
-
-
+* Message 필드 안에 있던 데이터들이 각각의 Field로 분리된 것을 확인할 수 있다.

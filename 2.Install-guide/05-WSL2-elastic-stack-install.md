@@ -31,7 +31,7 @@
 
 k8s 환경에서는 helm chart를 이용하면 다양한 솔루션들을 손 쉽게 설치할 수 있다. (Elastic 공식 Helm Chart : https://github.com/elastic/helm-charts)
 
-23.10.20 기준 8.5.1 Release 제공중이며, 본 교육에서는 공식 helm chart를 수정하여 v8.9.2, minimal size로 설치한다. (최소 Mem 4GB 이상 필요)
+23.10.20 기준 8.5.1 Release 제공중이며, 본 교육에서는 공식 helm chart를 수정하여 v8.10.4, minimal size로 설치한다. (최소 Mem 4GB 이상 필요)
 
 다음 명령어로 elastic helm repo를 가져온 후, elastic-edu git에서 가져온  values.yaml을 이용하여 배포한다. namespace는 es로 설정하였다.
 
@@ -146,19 +146,17 @@ $ kubectl create -f elastic-agent-role-clusterrole-serviceaccount.yaml
 * 브라우저에서 kibana에 접속한다.
   * http://localhost:5601 (elastic/new1234!)
 
-<img src="assets\20231022_223021.png">
+ <img src="assets\20231022_223021.png">
 
 
 
 * "Explore on my own"을 선택한다.
 
-<img src="assets\20231022_223312.png">
+ <img src="assets\20231022_223312.png">
 
 * 왼쪽 상단 ☰ > Management > Fleet를 선택한다.
 
-
-
-<img src="assets\20231022_230337.png">
+ <img src="assets\20231022_230337.png">
 
 
 
@@ -171,7 +169,7 @@ $ kubectl create -f elastic-agent-role-clusterrole-serviceaccount.yaml
   * fleet-server-policy
 * Create policy 선택
 
-<img src="assets\20231022_231511.png">
+ <img src="assets\20231022_231511.png">
 
 
 
@@ -225,7 +223,7 @@ $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
 
 * 잠시 기다리면 자동으로 Fleet Server와 Connect 된다.
 
-<img src="assets\20231023_145002.png">
+ <img src="assets\20231023_145002.png">
 
 
 
@@ -284,9 +282,9 @@ $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
 
     
 
-    <img src="assets\20231025_231455.png">
+   <img src="assets\20231025_231455.png">
 
-    
+  
 
   * ③ Install Elastic Agent on your hosts
 
@@ -310,12 +308,13 @@ $ kubectl apply -f elastic-agent-managed-kubernetes.yml
 
   * Powershell을 관리자 권한으로 실행
   
-    <img src="assets\20231025_232634.png">
+     <img src="assets\20231025_232634.png">
+
   
+
 * ③ Install Elastic Agent on your hosts > Windows를 선택한다.
-  
-  
-    <img src="assets\20231023_170026.png">
+
+     <img src="assets\20231023_170026.png">
 
   
 
@@ -347,18 +346,18 @@ $ kubectl apply -f elastic-agent-managed-kubernetes.yml
 * Kibana로 돌아가면 자동으로 Agent 가 추가된 것을 확인할 수 있다.
 
   <img src="assets\20231023_171352.png">
-  
-  
-  
-*  몇 분 기다리면 Agent와 연동이 완료된다.
 
-   <img src="assets\20231025_003851.png">
+
+
+* 몇 분 기다리면 Agent와 연동이 완료된다.
+
+ <img src="assets\20231025_003851.png">
 
 
 
 * Fleet > Settings > Outputs > Add output을 클릭한다.
 
-  <img src="assets\20231025_235313.png">
+ <img src="assets\20231025_235313.png">
 
 
 
@@ -376,7 +375,7 @@ $ kubectl apply -f elastic-agent-managed-kubernetes.yml
 
 * Save and apply settings
 
-  <img src="assets\20231025_235904.png">
+ <img src="assets\20231025_235904.png">
 
 
 
@@ -384,13 +383,13 @@ $ kubectl apply -f elastic-agent-managed-kubernetes.yml
 
   
 
-  <img src="assets\20231026_000854.png">
+ <img src="assets\20231026_000854.png">
 
 
 
 * fleet-server-policy > Settings를 선택한다.
 
-  <img src="assets\20231026_001144.png">
+ <img src="assets\20231026_001144.png">
 
 * Output for integrations
 
@@ -400,13 +399,13 @@ $ kubectl apply -f elastic-agent-managed-kubernetes.yml
 
   * fleet-es
 
-  <img src="assets\20231026_001454.png">
+ <img src="assets\20231026_001454.png">
 
-  
 
-  <img src="assets\20231026_111942.png">
 
-<img src="assets\20231026_112027.png">
+<img src="assets\20231026_111942.png">
+
+ <img src="assets\20231026_112027.png">
 
 
 
@@ -433,7 +432,7 @@ $ kubectl apply -f elastic-agent-managed-kubernetes.yml
 
 #### 4. Discover 메뉴 살펴보기
 
-* 자세한 내용은 [Kibana 사용 가이드](../3.User-guide/01-kibana.md)를 참고한다.
+* 자세한 내용은 [Discover 사용 가이드](../3.User-guide/01-Discover.md)를 참고한다.
 
 
 
