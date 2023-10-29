@@ -134,7 +134,29 @@ $ curl -v http://localhost:5601
 
 ## 4) Fleet Server 설치하기
 
-Elastic Agent를 관리하기 위한 Fleet Server를 설치한다.
+
+
+#### Fleet Server란?
+
+다양한 데이터 소스에서 데이터 수집을 위해 여러 종류의 Beats를 설치하고 각각의 설정을 하나씩 설정하고 Health check도 별도로 했던 불편사항을 개선하기 위해 데이터 수집기는 Elastic Agent 하나로 통합하고 Fleet Server를 통해 Agent 통합관리하여 Configuration 및 바이너리 자동업데이트를 지원합니다.
+
+ <img src="assets/20231029_215753.png">
+
+
+
+1. Agent policy가 생성되면 Kibana의 Fleet UI에서 해당 정책을 Elasticsearch의 Fleet 인덱스에 저장
+2. Elastic Agent는 인증을 위해 생성된 token을 사용하여 Fleet Server에 인증 요청
+3. Fleet Server는 Fleet 인덱스를 모니터링하고 Elasticsearch에서 새 에이전트 정책을 선택한 다음 해당 정책에 등록된 모든 Elastic 에이전트에 정책 전달
+4. Elastic Agent는 정책의 구성 정보를 사용하여 데이터를 수집하고 Elasticsearch로 전송
+5. Elastic Agent는 업데이트를 위해 Fleet Server에 체크인하여 연결을 유지
+6. 정책이 업데이트되면 Fleet Server는 Elasticsearch에서 업데이트된 정책을 검색하여 연결된 Elastic Agent로 전송
+7. Elastic Agent 상태 및 정책 롤아웃에 대해 Fleet과 통신하기 위해 Fleet 서버는 Fleet 인덱스에 업데이트
+
+
+
+#### Fleet Server 설치
+
+* Elastic Agent를 관리하기 위한 Fleet Server를 설치 전 Agent를 관리하기 위한 Role을 추가한다.
 
 ``` bash
 # elastic agent를 관리하기 위한 다양한 role 추가
