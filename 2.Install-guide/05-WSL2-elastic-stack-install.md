@@ -320,7 +320,7 @@ $ kubectl port-forward -n es svc/fleet-server 8220:8220 &
   # 복사한 FLEET_ENROLLMENT_TOKEN 값 수정
   $ vi elastic-agent-managed-kubernetes.yml
   
-  # elastic-agent daemonset 생성
+  # elastic-agent daemonset 생성 (이때 FLEET_ENROLLMENT_TOKEN 값 수정 필요)
 $ kubectl apply -f elastic-agent-managed-kubernetes.yml
   ```
 
